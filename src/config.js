@@ -28,6 +28,7 @@ export const env = {
   textKeyIsSeparate: Boolean(process.env.GEMINI_TEXT_API_KEY),
   imageModel: process.env.IMAGE_MODEL || 'gemini-3.1-flash-image',
   imageProvider: process.env.IMAGE_PROVIDER || 'auto', // auto | gemini | pollinations
+  aspectRatio: process.env.ASPECT_RATIO || '4:5', // 인스타 세로
   anthropicApiKey: process.env.ANTHROPIC_API_KEY,
   scriptProvider,
   scriptModel: process.env.SCRIPT_MODEL || scriptModelDefault,

@@ -10,6 +10,7 @@
     "generate": "node src/cli.js generate",
     "script": "node src/cli.js script",
     "images": "node src/cli.js images",
+    "bubbles": "node src/cli.js bubbles",
     "new": "node src/cli.js new"
   },
   "engines": {

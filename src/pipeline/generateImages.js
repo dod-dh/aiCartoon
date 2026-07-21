@@ -1,13 +1,13 @@
-// 컷 프롬프트 → PNG. 캐릭터 시트를 레퍼런스로 첨부해 얼굴/화풍 고정.
+// 컷 프롬프트 → PNG. 매 컷 캐릭터 시트(+등장 캐릭터 크롭)를 레퍼런스로 첨부해 얼굴/화풍 고정.
 import path from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { env } from '../config.js';
 import { ok, warn } from '../utils/log.js';
+import { referencesFor } from '../utils/references.js';
 import { generatePanel as gemini } from '../providers/gemini.js';
 import { generatePanel as pollinations } from '../providers/pollinations.js';
 
 function pickProvider() {
-  // 명시적 강제 전환
   if (env.imageProvider === 'pollinations') {
     warn('IMAGE_PROVIDER=pollinations → 무료 폴백 사용(얼굴 일관성 보장 안 됨).');
     return pollinations;
@@ -16,7 +16,6 @@ function pickProvider() {
     if (!env.geminiApiKey) throw new Error('GEMINI_API_KEY가 필요합니다.');
     return gemini;
   }
-  // auto: Gemini 우선, 키 없으면 폴백
   if (env.geminiApiKey) return gemini;
   if (env.fallbackImageProvider === 'pollinations') {
     warn('GEMINI_API_KEY 없음 → Pollinations 폴백 사용(얼굴 일관성 보장 안 됨).');
@@ -28,12 +27,13 @@ function pickProvider() {
 export async function generateImages(prompts, dir) {
   const provider = pickProvider();
   const results = [];
-  // 순차 실행: 무료 티어 RPM 보호 + 이전 컷을 다음 컷의 추가 레퍼런스로 넘길 수 있게.
-  for (const { panel, prompt } of prompts) {
-    const png = await provider(prompt); // Buffer
+  // 순차 실행: 무료/유료 RPM 보호.
+  for (const { panel, prompt, characters } of prompts) {
+    const refs = await referencesFor(characters); // 전체 시트 + 등장 캐릭터 크롭
+    const png = await provider(prompt, refs); // Buffer
     const file = path.join(dir, 'panels', `panel-${String(panel).padStart(2, '0')}.png`);
     writeFileSync(file, png);
-    ok(`컷 ${panel} → ${path.relative(dir, file)}`);
+    ok(`컷 ${panel} (${(characters || []).join(',') || '-'}) → ${path.relative(dir, file)}`);
     results.push({ panel, file });
   }
   return results;

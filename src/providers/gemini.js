@@ -1,31 +1,21 @@
-// Gemini 2.5 Flash Image (Nano Banana) 이미지 생성
-// 캐릭터 시트(characters.png)를 인라인 이미지로 함께 전달해 얼굴/화풍을 고정한다.
-import { readFileSync } from 'node:fs';
+// Gemini 이미지 생성 (Nano Banana Pro / 2.5-flash-image).
+// 레퍼런스 이미지(전체 시트 + 캐릭터 크롭)를 프롬프트보다 먼저 배치해 얼굴/화풍을 강하게 고정한다.
 import { GoogleGenAI } from '@google/genai';
-import { env, paths } from '../config.js';
+import { env } from '../config.js';
 
-let _client, _sheetPart;
+let _client;
 function client() {
   return (_client ??= new GoogleGenAI({ apiKey: env.geminiApiKey }));
-}
-function sheetPart() {
-  return (_sheetPart ??= {
-    inlineData: {
-      mimeType: 'image/png',
-      data: readFileSync(paths.referenceSheet).toString('base64'),
-    },
-  });
 }
 
 /**
  * @param {string} prompt
- * @param {Buffer[]} [extraRefs]  이전 컷 등 추가 레퍼런스(선택)
+ * @param {Buffer[]} refImages  레퍼런스 이미지 버퍼 배열(시트 + 크롭). 항상 프롬프트 앞에 첨부.
  * @returns {Promise<Buffer>} PNG
  */
-export async function generatePanel(prompt, extraRefs = []) {
+export async function generatePanel(prompt, refImages = []) {
   const parts = [
-    sheetPart(),
-    ...extraRefs.map((buf) => ({
+    ...refImages.map((buf) => ({
       inlineData: { mimeType: 'image/png', data: buf.toString('base64') },
     })),
     { text: prompt },
@@ -34,6 +24,7 @@ export async function generatePanel(prompt, extraRefs = []) {
   const res = await client().models.generateContent({
     model: env.imageModel,
     contents: [{ role: 'user', parts }],
+    config: { imageConfig: { aspectRatio: env.aspectRatio } },
   });
 
   const out = res.candidates?.[0]?.content?.parts?.find((p) => p.inlineData)?.inlineData;
