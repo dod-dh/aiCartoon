@@ -7,6 +7,16 @@ import { generatePanel as gemini } from '../providers/gemini.js';
 import { generatePanel as pollinations } from '../providers/pollinations.js';
 
 function pickProvider() {
+  // 명시적 강제 전환
+  if (env.imageProvider === 'pollinations') {
+    warn('IMAGE_PROVIDER=pollinations → 무료 폴백 사용(얼굴 일관성 보장 안 됨).');
+    return pollinations;
+  }
+  if (env.imageProvider === 'gemini') {
+    if (!env.geminiApiKey) throw new Error('GEMINI_API_KEY가 필요합니다.');
+    return gemini;
+  }
+  // auto: Gemini 우선, 키 없으면 폴백
   if (env.geminiApiKey) return gemini;
   if (env.fallbackImageProvider === 'pollinations') {
     warn('GEMINI_API_KEY 없음 → Pollinations 폴백 사용(얼굴 일관성 보장 안 됨).');

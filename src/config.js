@@ -18,11 +18,12 @@ export const paths = {
 };
 
 const scriptProvider = process.env.SCRIPT_PROVIDER || 'gemini'; // gemini | anthropic | manual
-const scriptModelDefault = scriptProvider === 'anthropic' ? 'claude-sonnet-5' : 'gemini-2.5-flash';
+const scriptModelDefault = scriptProvider === 'anthropic' ? 'claude-sonnet-5' : 'gemini-flash-latest';
 
 export const env = {
   geminiApiKey: process.env.GEMINI_API_KEY,
-  imageModel: process.env.IMAGE_MODEL || 'gemini-2.5-flash-image',
+  imageModel: process.env.IMAGE_MODEL || 'gemini-3.1-flash-image',
+  imageProvider: process.env.IMAGE_PROVIDER || 'auto', // auto | gemini | pollinations
   anthropicApiKey: process.env.ANTHROPIC_API_KEY,
   scriptProvider,
   scriptModel: process.env.SCRIPT_MODEL || scriptModelDefault,
