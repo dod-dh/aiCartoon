@@ -1,0 +1,16 @@
+node_modules/
+.env
+.env.local
+
+# 생성된 산출물은 커밋하지 않음 (원본 대본만 버전 관리)
+outputs/*/
+!outputs/.gitkeep
+
+# 임시/캐시
+*.log
+.cache/
+.DS_Store
+Thumbs.db
+
+# Claude Code 로컬(개인) 설정
+.claude/settings.local.json

@@ -1,0 +1,26 @@
+{
+  "name": "ai-cartoon",
+  "version": "0.1.0",
+  "description": "무료 AI 이미지 생성 API(Gemini 2.5 Flash Image / Nano Banana)를 이용한 인스타그램 세로 웹툰 자동 생성기",
+  "type": "module",
+  "bin": {
+    "toon": "src/cli.js"
+  },
+  "scripts": {
+    "generate": "node src/cli.js generate",
+    "script": "node src/cli.js script",
+    "images": "node src/cli.js images",
+    "new": "node src/cli.js new"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0",
+    "@anthropic-ai/sdk": "^0.40.0",
+    "sharp": "^0.33.0",
+    "dotenv": "^16.4.0",
+    "gray-matter": "^4.0.3",
+    "yaml": "^2.5.0"
+  }
+}
