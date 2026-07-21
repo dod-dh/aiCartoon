@@ -21,7 +21,11 @@ const scriptProvider = process.env.SCRIPT_PROVIDER || 'gemini'; // gemini | anth
 const scriptModelDefault = scriptProvider === 'anthropic' ? 'claude-sonnet-5' : 'gemini-flash-latest';
 
 export const env = {
+  // 이미지용 키(결제 활성화된 프로젝트). 이미지 생성에만 사용 → 과금.
   geminiApiKey: process.env.GEMINI_API_KEY,
+  // 대본/텍스트용 키(결제 없는 무료 프로젝트). 없으면 이미지 키로 폴백.
+  geminiTextApiKey: process.env.GEMINI_TEXT_API_KEY || process.env.GEMINI_API_KEY,
+  textKeyIsSeparate: Boolean(process.env.GEMINI_TEXT_API_KEY),
   imageModel: process.env.IMAGE_MODEL || 'gemini-3.1-flash-image',
   imageProvider: process.env.IMAGE_PROVIDER || 'auto', // auto | gemini | pollinations
   anthropicApiKey: process.env.ANTHROPIC_API_KEY,

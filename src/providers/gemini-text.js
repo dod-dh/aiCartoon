@@ -2,11 +2,15 @@
 // JSON 강제 출력(responseMimeType)으로 파싱 안정성을 높인다.
 import { GoogleGenAI } from '@google/genai';
 import { env } from '../config.js';
+import { warn } from '../utils/log.js';
 
 let _client;
 function client() {
-  if (!env.geminiApiKey) throw new Error('GEMINI_API_KEY가 필요합니다(.env). 또는 SCRIPT_PROVIDER=manual.');
-  return (_client ??= new GoogleGenAI({ apiKey: env.geminiApiKey }));
+  if (!env.geminiTextApiKey) throw new Error('GEMINI_TEXT_API_KEY(또는 GEMINI_API_KEY)가 필요합니다. 또는 SCRIPT_PROVIDER=manual.');
+  if (!env.textKeyIsSeparate) {
+    warn('대본이 이미지 키(결제 프로젝트)로 호출됩니다 → 소액 과금될 수 있음. 무료로 쓰려면 GEMINI_TEXT_API_KEY(결제 없는 키)를 설정하세요.');
+  }
+  return (_client ??= new GoogleGenAI({ apiKey: env.geminiTextApiKey }));
 }
 
 export async function expandWithGemini({ episode, bible, systemPrompt }) {
